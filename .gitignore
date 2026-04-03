@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+venv/
+*.egg-info/
+.env
+.DS_Store
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/.gitignore
+/.idea/copilot.data.migration.ask2agent.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/tt.iml
+/.idea/vcs.xml
+/allure-reports/
+/candidate/logs/

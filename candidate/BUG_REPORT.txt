@@ -1,0 +1,61 @@
+Part 5 - Bug Report
+
+Bug #1
+Title: Dismissed finding is still accessible via GET /findings/{id}
+Severity: Medium
+Steps to reproduce:
+1. Create a finding using POST /findings.
+2. Dismiss it using DELETE /findings/{id}.
+3. Call GET /findings/{id} for the dismissed finding.
+Expected behavior:
+- API should hide dismissed findings from detail endpoint and return 404 Not Found.
+Actual behavior:
+- API returns 200 OK and still exposes dismissed finding details.
+
+Bug #2
+Title: Invalid status transitions are accepted
+Severity: High
+Steps to reproduce:
+1. Create a finding using POST /findings.
+2. Update status to resolved using PUT /findings/{id}/status.
+3. Update the same finding back to open using PUT /findings/{id}/status.
+Expected behavior:
+- Business rules should reject invalid backward transition (resolved -> open) with 400.
+Actual behavior:
+- API accepts transition and returns success instead of validation error.
+
+Bug #3
+Title: /findings/search is vulnerable to SQL injection payloads
+Severity: Critical
+Steps to reproduce:
+1. Call GET /findings/search?q=%' OR 1=1 -- .
+2. Observe returned results.
+Expected behavior:
+- Query must be safely parameterized; injection payload should return no forced matches.
+Actual behavior:
+- Endpoint behavior indicates raw query interpolation risk (payload can alter query logic).
+
+Bug #4
+Title: vulnerabilities.cvss_score lacks DB range constraint
+Severity: High
+Steps to reproduce:
+1. Connect to PostgreSQL database.
+2. Insert vulnerability with cvss_score = 999.0.
+3. Commit/rollback based on result.
+Expected behavior:
+- DB should reject out-of-range score (expected CVSS range 0..10) with IntegrityError.
+Actual behavior:
+- Insert succeeds, which shows missing CHECK constraint.
+
+Bug #5
+Title: UI findings table does not refresh after status change
+Severity: Medium
+Steps to reproduce:
+1. Create a finding and open dashboard UI.
+2. Verify row status is open.
+3. Change row status to resolved in UI dropdown.
+4. Observe badge text in the same table row.
+Expected behavior:
+- Row status badge should refresh to resolved without manual page reload.
+Actual behavior:
+- Table keeps stale status value; updated status is not reflected immediately.
